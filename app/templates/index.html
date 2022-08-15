@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+<!-- This makes it have the same content as the base.html, so all that needs to go in this file is the stuff that's specific to this page -->
+
+{% block title %} HOME {% endblock title %}
+
+{% block content %}
+<!-- Container -->
+<div class="container">            
+    <h1 style="color:pink;">Hello World!</h1>
+    
+    <h4>{{ user['username'] }}</h4>
+    <h5>My favorite colors:</h5>
+    <ul>
+        {% for color in colors %}
+            {% if color == 'blue' %}
+            <!-- <li style="color:{{ color }}">{{ color.upper() }}</li> -->
+            <li>{{ color.upper() }}</li>
+            {% else %}
+            <!-- <li style="color:{{ color }}">{{ color }}</li> -->
+            <li>{{ color }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+{% endblock content %}
