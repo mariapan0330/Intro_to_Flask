@@ -1,7 +1,7 @@
-from app import app
+from app import app1
 from flask import render_template
 
-@app.route('/')
+@app1.route('/')
 def index():
     user_info = {
         'username':'mariapan',
@@ -12,6 +12,6 @@ def index():
     # render_template takes in any number of arguments BY KEYWORD
 
 
-@app.route('/test')
+@app1.route('/test')
 def test():
     return render_template('test.html')
