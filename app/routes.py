@@ -1,6 +1,7 @@
 from app import app
 from flask import render_template
 from app.forms import SignUpForm
+from app.models import User
 
 @app.route('/')
 def index():
@@ -20,6 +21,10 @@ def signup():
     if form.validate_on_submit(): # will return True or False
         # if this doesn't work, it might be because you forgot csrf token.
         print("Form has been successfully validated!!! Yay.")
-        print(form.email.data, form.username.data, form.password.data)
-        # the .data prints out whatever they submitted
+        email = form.email.data
+        username = form.username.data
+        password = form.password.data
+        # the .data is whatever they submitted
+        new_user = User(email=email, username=username, password=password)
+        print(f"{new_user.username} has been created.")
     return render_template('signup.html', form=form)
