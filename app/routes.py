@@ -12,6 +12,6 @@ def index():
     # render_template takes in any number of arguments BY KEYWORD
 
 
-@app1.route('/test')
-def test():
-    return render_template('test.html')
+@app1.route('/signup')
+def signup():
+    return render_template('signup.html')
