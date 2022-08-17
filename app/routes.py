@@ -1,7 +1,7 @@
 from app import app
-from flask import render_template
-from app.forms import SignUpForm
-from app.models import User
+from flask import render_template, redirect, url_for, flash
+from app.forms import SignUpForm, PostForm
+from app.models import User, Post
 
 @app.route('/')
 def index():
@@ -25,6 +25,27 @@ def signup():
         username = form.username.data
         password = form.password.data
         # the .data is whatever they submitted
+        # Check if that username or email already exists.
+        existing_user = User.query.filter((User.email == email) | (User.username == username)).first()
+        if existing_user:
+            flash('A user with that username or email already exists.', 'danger')
+            return redirect(url_for('signup'))
+
         new_user = User(email=email, username=username, password=password)
-        print(f"{new_user.username} has been created.")
+        flash(f"{new_user.username} has been created.", 'success')
+        return redirect(url_for('index'))
     return render_template('signup.html', form=form)
+
+
+@app.route('/create', methods=['GET','POST'])
+def create():
+    form = PostForm()
+    if form.validate_on_submit():
+        # get the data!
+        title = form.title.data
+        body = form.body.data
+        new_post = Post(title=title, body=body, user_id=1)
+        flash(f'{new_post.title} has been created', 'success')
+        return redirect(url_for('index'))
+        
+    return render_template('createpost.html', form=form)

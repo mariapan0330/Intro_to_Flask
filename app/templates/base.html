@@ -22,15 +22,15 @@
                 <div class="navbar-nav">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('index') }}">Home</a>
                     <a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a>
-                    <a class="nav-link" href="#">Log In</a>
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                    <a class="nav-link" href="{{ url_for('create') }}">Create Post</a>
                 </div>
                 </div>
             </div>
         </nav>
         
         <!-- Container -->
-        <div class="container">            
+        <div class="container">
+            {% include 'alert.html' %}
             {% block content %}{% endblock content %}
         </div>
 
