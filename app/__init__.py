@@ -22,5 +22,8 @@ migrate = Migrate(app, db)
 
 # Create an instance of the loginManager to handle authentication
 login = LoginManager(app)
+login.login_view = 'login' #tells the login manager which endpoint to redirect to if someone is not logged in
+login.login_message = 'You must be logged in to do that.'
+login.login_message_category = 'danger'
 
 from . import routes, models

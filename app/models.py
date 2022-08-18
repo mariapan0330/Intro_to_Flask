@@ -1,6 +1,6 @@
 from app import db, login
 from datetime import datetime
-from werkzeug.security import generate_password_hash as gph
+from werkzeug.security import generate_password_hash as gph, check_password_hash as cph
 from flask_login import UserMixin
 
 class User(db.Model, UserMixin):
@@ -17,12 +17,23 @@ class User(db.Model, UserMixin):
     def __init__(self, **kwargs):
         # has to have kwargs ability and call super with the kwargs
         super().__init__(**kwargs)
-        self.password = gph(kwargs['password'])
+        self.set_password(kwargs['password'])
         db.session.add(self)
         db.session.commit()
     
     def __repr__(self):
         return f"<User {self.user_id} | {self.username}>"
+    
+
+    def check_password(self, pw):
+        # returns true if self.password == the password they put in
+        return cph(self.password, pw)
+
+    def set_password(self, pw):
+        self.password = gph(pw)
+    
+    def get_id(self):
+        return str(self.user_id)
 
 
 @login.user_loader
@@ -35,7 +46,7 @@ class Post(db.Model):
     title = db.Column(db.String(50), nullable=False)
     body = db.Column(db.String(255), nullable=False)
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    # making a foreign key like in SQL: FOREIGN KEY(user_id) REFERENCES user(user_id)
+    # making a foreign key like in SQL: FOREIGN KEY(id) REFERENCES user(id)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
 
     def __init__(self, **kwargs):

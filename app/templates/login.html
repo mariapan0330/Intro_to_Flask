@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In{% endblock title %}
+
+{% block content %}
+<h2 class="text-center">Log In Here!</h2>
+
+<form method="post">
+    <!-- post request puts stuff on the server. wont work by itself, you have to also make a methods['GET','POST'] in the route -->
+    {{ form.csrf_token }}
+    <!-- every time you submit the form, it needs a new token so it can validate the field. -->
+    <div class="form-group">
+        {{ form.username.label }}
+        {{ form.username(class='form-control', placeholder='Enter Username') }}
+        
+        {{ form.password.label }}
+        {{ form.password(class='form-control', placeholder='Enter Password') }}
+
+        {{ form.submit(class='btn btn-primary w-100 mt-3') }}
+        <!-- w-100 makes width 100% -->
+
+    </div>
+</form>
+
+{% endblock content %}

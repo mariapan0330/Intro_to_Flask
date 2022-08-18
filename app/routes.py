@@ -1,16 +1,13 @@
 from app import app
 from flask import render_template, redirect, url_for, flash
-from app.forms import SignUpForm, PostForm
+from flask_login import login_user, logout_user, login_required, current_user
+from app.forms import SignUpForm, PostForm, LoginForm
 from app.models import User, Post
 
 @app.route('/')
 def index():
-    user_info = {
-        'username':'mariapan',
-        'email':'maria.pan0330@gmail.com'
-    }
-    colors = ['red','orange','gold','green','blue','purple']
-    return render_template('index.html', user=user_info, colors=colors)
+    posts = Post.query.all()
+    return render_template('index.html', posts=posts)
     # render_template takes in any number of arguments BY KEYWORD
 
 
@@ -38,14 +35,48 @@ def signup():
 
 
 @app.route('/create', methods=['GET','POST'])
+@login_required
 def create():
     form = PostForm()
     if form.validate_on_submit():
         # get the data!
         title = form.title.data
         body = form.body.data
-        new_post = Post(title=title, body=body, user_id=1)
-        flash(f'{new_post.title} has been created', 'success')
+        new_post = Post(title=title, body=body, user_id=current_user.user_id)
+        flash(f"Posting your article, '{new_post.title}' by {current_user.username}", 'success')
         return redirect(url_for('index'))
         
     return render_template('createpost.html', form=form)
+
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+    form = LoginForm()
+    # validate by checking through existing users and seeing if the one trying to login is one of them
+    # and also check if their pw is correct which is saved in our db as a hashed code thing
+    # which we have to unscramble using the check password hash method
+    if form.validate_on_submit():
+        # get username and password from form
+        username = form.username.data
+        password = form.password.data
+        # query the user table for a user with the same username as entered in form
+        user = User.query.filter_by(username=username).first()
+        # if the user exists
+        if user is not None and user.check_password(password):
+            # log the user in using the flask-login login_user fn
+            login_user(user)
+            # flash success message
+            flash(f'Login successful! Welcome back, {user.username}.', 'success')
+            return redirect(url_for('index'))
+        # if username or pw incorrect
+        else:
+            flash('Incorrect username and/or password. Please try again.','danger')
+            return redirect(url_for('login'))
+    return render_template('login.html', form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash("You have successfully logged out.", 'success')
+    return redirect(url_for('index'))

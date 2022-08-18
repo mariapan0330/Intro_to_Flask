@@ -1,25 +1,26 @@
 {% extends 'base.html' %}
-<!-- This makes it have the same content as the base.html, so all that needs to go in this file is the stuff that's specific to this page -->
+<!-- This makes it have the same content as the base.html, 
+    so all that needs to go in this file is the stuff that's specific to this page -->
 
 {% block title %} HOME {% endblock title %}
 
 {% block content %}
-<!-- Container -->
-<div class="container">            
-    <h1 style="color:pink;">Hello World!</h1>
-    
-    <h4>{{ user['username'] }}</h4>
-    <h5>My favorite colors:</h5>
-    <ul>
-        {% for color in colors %}
-            {% if color == 'blue' %}
-            <!-- <li style="color:{{ color }}">{{ color.upper() }}</li> -->
-            <li>{{ color.upper() }}</li>
-            {% else %}
-            <!-- <li style="color:{{ color }}">{{ color }}</li> -->
-            <li>{{ color }}</li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-</div>
+    <h2 class="text-center">Welcome to the Blog</h2>
+{% if current_user.is_authenticated %}
+    <h5 class="text-center">Signed in as: {{ current_user.username }}</h5>
+
+    {% for post in posts %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ post.title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ post.author.username }}</h6>
+                <p class="card-text">{{ post.body }}</p>
+            </div>
+        </div>
+    {% endfor %}
+
+{% else %}
+    <h6 class="text-center">Please sign up or log in to view and create posts.</h6>
+{% endif %}
+
 {% endblock content %}
