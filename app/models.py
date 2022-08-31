@@ -34,6 +34,15 @@ class User(db.Model, UserMixin):
     
     def get_id(self):
         return str(self.user_id)
+    
+    def to_dict(self):
+        return {
+            'user_id': self.user_id,
+            'email': self.email,
+            'username': self.username,
+            'password': self.password,
+            'date_created': self.date_created,
+        }
 
 
 @login.user_loader
@@ -56,3 +65,22 @@ class Post(db.Model):
     
     def __repr__(self):
         return f"<User {self.post_id} | {self.title}>"
+    
+    def update(self, **kwargs):
+        for key, val in kwargs.items():
+            if key in {'title', 'body'}:
+                setattr(self, key, val)
+        db.session.commit() # so the database changes as well 
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def to_dict(self):
+        return {
+            'id': self.post_id,
+            'title': self.title,
+            'body': self.body,
+            'date_created': self.date_created,
+            'user_id': self.user_id,
+        }

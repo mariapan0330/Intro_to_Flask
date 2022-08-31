@@ -80,3 +80,40 @@ def logout():
     logout_user()
     flash("You have successfully logged out.", 'success')
     return redirect(url_for('index'))
+
+
+@app.route('/posts/<post_id>')
+@login_required
+def view_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('post.html', post=post)
+
+
+@app.route('/posts/<post_id>/edit', methods=["GET","POST"])
+@login_required
+def edit_post(post_id):
+    post_to_edit = Post.query.get_or_404(post_id)
+    # make sure the post to edit is owned by the current user
+    if post_to_edit.author != current_user:
+        flash('You do not have permission to edit this post.', 'danger')
+        return redirect(url_for('view_post',post_id=post_id))
+    form = PostForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        body = form.body.data
+        flash(f"Posting your article, '{post_to_edit.title}' by {current_user.username}", 'success')
+        post_to_edit.update(title=title,body=body)
+        return redirect(url_for('view_post', post_id=post_id))
+    return render_template('editpost.html', post=post_to_edit, form=form)
+
+
+@app.route('/posts/<post_id>/delete', methods=["GET","POST"])
+@login_required
+def delete_post(post_id):
+    post_to_delete = Post.query.get_or_404(post_id)
+    if post_to_delete.author != current_user:
+        flash('You do not have permission to delete this post.','danger')
+        return redirect(url_for('view_post',post_id=post_id))
+    post_to_delete.delete()
+    flash(f'{post_to_delete.title} has been deleted.', 'info')
+    return redirect(url_for('index'))
