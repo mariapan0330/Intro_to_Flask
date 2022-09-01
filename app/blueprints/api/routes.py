@@ -65,9 +65,9 @@ def post_user():
     for field in ['email','username','password']:
         if field not in data: 
             return jsonify({"error": f"'{field}' must be in request body"}), 400
-    email = data.get(email)
-    username = data.get(username)
-    password = data.get(password)
+    email = data.get('email')
+    username = data.get('username')
+    password = data.get('password')
     existing_user = User.query.filter((User.email == email) | (User.username == username)).first()
     if existing_user:
         return jsonify({"error": "User with username and/or email already exists"}), 400
