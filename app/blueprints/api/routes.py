@@ -45,16 +45,23 @@ def create_post():
 
 @api.route('/users', methods=['POST'])
 def post_user():
+    # return 'create user'
     if not request.is_json: # check if the request is in the valid format ('request' is imported from flask!!)
         return jsonify({"error": "Your request content-type must be application/json!!!"}), 400 # the 400 is an error code
 
     # if it is in the valid format, it will continue to below:
     data = request.json
     # check that the data is being submitted in the right format (otherwise, return an error and a 400 code)
-    for field in ['user_id','email','username','password','date_created','posts']:
+    for field in ['email','username','password']:
         if field not in data: 
             return jsonify({"error": f"'{field}' must be in request body"}), 400
-    return jsonify(User(user_id=data.get('user_id'), email=data.get('email'), username=data.get('username'), password=data.get('password'), date_created=data.get('date_created'), posts=data.get('posts')))
+    email = data.get(email)
+    username = data.get(username)
+    password = data.get(password)
+    existing_user = User.query.filter((User.email == email) | (User.username == username)).first()
+    if existing_user:
+        return jsonify({"error": "User with username and/or email already exists"}), 400
+    return jsonify(User(email=email, username=username, password=password).to_dict()), 201
 
 
 @api.route('/users',methods=['GET'])

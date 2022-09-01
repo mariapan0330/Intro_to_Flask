@@ -41,7 +41,7 @@ class User(db.Model, UserMixin):
             'email': self.email,
             'username': self.username,
             'password': self.password,
-            'date_created': self.date_created,
+            'date_created': self.date_created
         }
 
 
