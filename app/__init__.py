@@ -3,6 +3,8 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_cors import CORS # first do >>> pip install -U flask-cors && pip freeze > requirements.txt 
+
 
 # from the confg module we made, import the config class we made.
 # We'll use this to set attributes here.
@@ -25,6 +27,8 @@ login = LoginManager(app)
 login.login_view = 'login' #tells the login manager which endpoint to redirect to if someone is not logged in
 login.login_message = 'You must be logged in to do that.'
 login.login_message_category = 'danger'
+
+CORS(app) # what is this
 
 from app.blueprints.api import api # tries to import api which imports the api and everything that it needs
 app.register_blueprint(api) # adds the api to my main app

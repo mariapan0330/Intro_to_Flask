@@ -1,12 +1,19 @@
-import json
 from . import api
+from .auth import basic_auth, token_auth
 from flask import jsonify, request
 from app.models import Post, User
 
-@api.route('/')
-def index():
-    names = ['Amanda','Bob','Carl']
-    return jsonify(names)
+# @api.route('/')
+# def index():
+#     names = ['Amanda','Bob','Carl']
+#     return jsonify(names)
+
+@api.route('/token')
+@basic_auth.login_required # this is coming from our auth.py file, requires you to be authenticated
+def get_token():
+    user = basic_auth.current_user()
+    token = user.get_token()
+    return jsonify({"token": token, "token_expiration": user.token_expiration})
 
 
 @api.route('/posts', methods=["GET"])
@@ -23,6 +30,8 @@ def get_posts(post_id):
 
 
 @api.route('/posts', methods=["POST"])
+@token_auth.login_required
+# ^ makes it so that you can't post stuff to the api without verified user
 def create_post():
     if not request.is_json:
         return jsonify({'error': 'Your request content-type must be application/json!!!'}), 400
@@ -30,14 +39,15 @@ def create_post():
     data = request.json
     # print(data, type(data))
     # validate the data
-    for field in ['title','body','user_id']:
+    # for field in ['title','body','user_id']: # instead of user id we'll just use whoever is logged in
+    for field in ['title','body']:
         if field not in data:
             # if field is not in the request body, respond with a 400 error
             return jsonify({'error': f"'{field}' must be in request body"}), 400
 
     title = data.get('title')
     body = data.get('body')
-    user_id= data.get('user_id')
+    user_id= token_auth.current_user().user_id
     new_post = Post(title=title, body=body, user_id=user_id)
     return jsonify(new_post.to_dict()), 201
 
